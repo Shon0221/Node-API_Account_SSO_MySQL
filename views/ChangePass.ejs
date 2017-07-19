@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <% include submenu/page/head.ejs %>
+
+        <style>
+            body {
+                padding: 50px;
+                font: 13px Helvetica, Arial, sans-serif;
+            }
+            
+            .error {
+                color: red
+            }
+            
+            .success {
+                color: green;
+            }
+        </style>
+</head>
+
+<body>
+    <% include submenu/page/header.ejs %>
+        <%- message %>
+            <form method="post" action="/Account/Aquarium/ChangePassword">
+                <p>
+                    <input type=hidden name="VerifyID" value=<%- VerifyID %>>
+                </p>
+                <p>
+                    <label>New Password:</label>
+                    <input type="password" name="newpas">
+                </p>
+                <p>
+                    <label>Confirm New Password:</label>
+                    <input type="password" name="conpas">
+                </p>
+                <p>
+                    <input type="submit" value="Change Password">
+                </p>
+            </form>
+
+            <% include submenu/page/footer.ejs %>
+                <% include submenu/page/jsdefaults.ejs %>
+</body>
+
+</html>

@@ -1,0 +1,8 @@
+openssl genrsa -out ryans-key.pem 2048
+openssl req -new -sha256 -key ryans-key.pem -out ryans-csr.pem
+openssl x509 -req -in ryans-csr.pem -signkey ryans-key.pem -out ryans-cert.pem
+openssl pkcs12 -export -in ryans-cert.pem -inkey ryans-key.pem -out ryans.p12
+openssl pkcs12 -export -inkey ryans-key.pem -in ryans-cert.pem -out ryans.p12 -name ryanskey
+openssl req -new -key ryans-key.pem -out ryanscsr.csr
+openssl x509 -req -days 365 -in ryanscsr.csr -signkey ryanskey.key -out ryanscrt.crt
+keytool -importcert -trustcacerts -keystore ryans-bks.bks -file ryans-cert.pem -storetype BKS -provider org.bouncycastle.jce.provider.BouncyCastleProvider

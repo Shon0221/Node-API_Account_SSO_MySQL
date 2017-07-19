@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <% include submenu/page/head.ejs %>
+</head>
+
+<body class="<%= classname %>">
+    <% include submenu/page/header.ejs %>
+
+        <div class="container">
+            <h1>
+                <%= message %>
+            </h1>
+        </div>
+        <!-- container -->
+
+        <% include submenu/page/footer.ejs %>
+            <% include submenu/page/jsdefaults.ejs %>
+</body>
+
+</html>
