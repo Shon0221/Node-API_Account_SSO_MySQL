@@ -1,6 +1,5 @@
 var util = require('util');
 var resp = require('../response');
-var tools = require('../../config/tools');
 
 exports.regs = function(params, json, db, callback) {
     if (params.hasOwnProperty(json.KEY_ACCOUNT) && params.hasOwnProperty(json.KEY_PASSWORD) &&
@@ -117,6 +116,7 @@ function regAccountWithoutVF(params, db, conn, json, infoID, appID, callback) {
 }
 
 function sendEmail(account, vfCode, json, callback) {
+    var tools = require('../../config/tools');
     var domain = tools.sendmail.domain();
     var link = util.format('http://%s:9999/Account/Aquarium/VF?VFCode=%s', domain, vfCode);
     console.log(link);

@@ -18,10 +18,10 @@ function processData(params, json, db, callback) {
     /**
      * Select Account是否存在
      */
-    var sql = util.format("SELECT COUNT(Info_ID) AS CountColumn, Info_ID, Big_Strickers FROM Info WHERE Account = \'%s\' GROUP BY Info_ID", params[json.KEY_ACCOUNT]);
+    var sql = util.format("SELECT Info_ID, Big_Strickers FROM Info WHERE Account = \'%s\' GROUP BY Info_ID", params[json.KEY_ACCOUNT]);
     console.log(sql);
     db.tools.dbQuery(conn, sql).then(rows => {
-        var len = rows[0].CountColumn;
+        var len = rows.length;
         if (len > 0) {
             var infoID = rows[0].Info_ID;
             var oldFile = rows[0].Big_Strickers;
@@ -41,8 +41,9 @@ function processData(params, json, db, callback) {
             } else {
                 oldFile = dir + oldFile;
                 console.log(oldFile);
-                fs.unlinkSync(oldFile);
-                updateUserPhoto(db, conn, json, infoID, newPhotoContent, callback);
+                fs.unlink(oldFile, err => {
+                    updateUserPhoto(db, conn, json, infoID, newPhotoContent, callback);
+                });
             }
         } else {
             sendErrMsg(db, conn, json, json.VALUE_ERROR_MESSAGE_OF_ACCOUNT_NO_EXISTENCE_DB, callback);

@@ -67,13 +67,12 @@ exports.loginSucMsg = function(json, data, devData) {
     var msg = {};
     var birthday = data.Birthday;
     // var tmp = birthday.match(/(19[0-9]{2}|20[0-9]{2})-(0[1-9]|1[0-2])-([0-2][0-9]|3[0-1])/g);
-    console.log('64 ' + birthday);
+    console.log('70 ' + birthday);
     if (birthday && birthday !== 'null' && birthday !== '0000-00-00') {
         birthday = dateFormat(birthday, "yyyy-mm-dd");
     } else {
         birthday = "";
     }
-    console.log('70');
     msg[json.KEY_STATES] = true;
     msg[json.KEY_USERNAME] = data.UserName;
     msg[json.KEY_SEX] = data.Sex;

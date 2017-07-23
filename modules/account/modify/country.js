@@ -16,10 +16,10 @@ function processData(params, json, db, callback) {
     /**
      * Select Account是否存在
      */
-    var sql = util.format("SELECT COUNT(Info_ID) AS CountColumn, Info_ID FROM Info WHERE Account = \'%s\' GROUP BY Info_ID", params[json.KEY_ACCOUNT]);
+    var sql = util.format("SELECT Info_ID FROM Info WHERE Account = \'%s\' GROUP BY Info_ID", params[json.KEY_ACCOUNT]);
     console.log(sql);
     db.tools.dbQuery(conn, sql).then(rows => {
-        var len = rows[0].CountColumn;
+        var len = rows.length;
         if (len > 0) {
             var infoID = rows[0].Info_ID;
             sql = util.format("UPDATE Info SET Country_Code = \'%s\', Update_Time = NOW() WHERE Info_ID = %s", params[json.KEY_COUNTRY], infoID);

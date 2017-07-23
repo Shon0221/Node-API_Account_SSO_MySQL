@@ -23,7 +23,7 @@ function processData(params, json, db, callback) {
     /**
      * Select APP是否在DB
      */
-    var sql = util.format("SELECT COUNT(App_ID) AS CountColumn, App_ID FROM App WHERE App_Name = \'%s\' AND OS = \'%s\' GROUP BY App_ID", params[json.KEY_APP_NAME], params[json.KEY_OS]);
+    var sql = util.format("SELECT App_ID FROM App WHERE App_Name = \'%s\' AND OS = \'%s\' GROUP BY App_ID", params[json.KEY_APP_NAME], params[json.KEY_OS]);
     console.log(sql);
     db.tools.dbQuery(conn, sql).then(rows => {
         console.log(rows);
@@ -34,17 +34,14 @@ function processData(params, json, db, callback) {
             /**
              * Select Account是否存在
              */
-            sql = util.format("SELECT T_I.Info_ID, T_I.Password, T_I.UserName, T_I.Sex, T_I.Birthday, T_I.Country_Code, T_I.Big_Strickers, T_RI.VFStates FROM Info AS T_I JOIN Register_Info AS T_RI ON T_I.Info_ID = T_RI.Info_ID WHERE Account = \'%s\' GROUP BY T_I.Info_ID", params[json.KEY_ACCOUNT]);
+            sql = util.format("SELECT T_I.Info_ID, T_I.Password, T_I.UserName, T_I.Sex, T_I.Birthday, T_I.Country_Code, T_I.Big_Strickers, T_RI.VerifyID, T_RI.VFStates FROM Info AS T_I JOIN Register_Info AS T_RI ON T_I.Info_ID = T_RI.Info_ID WHERE Account = \'%s\' GROUP BY T_I.Info_ID", params[json.KEY_ACCOUNT]);
             db.tools.dbQuery(conn, sql).then(rows => {
-                console.log(rows);
                 var len = rows.length;
                 if (len > 0) {
-                    if (len > 0) {
-                        var data = rows[0];
-                        loginData(params, data, appID, db, conn, json, callback);
-                    } else {
-                        sendErrMsg(db, conn, json, json.VALUE_ERROR_MESSAGE_OF_ACCOUNT_NO_EXISTENCE_DB, callback);
-                    }
+                    var data = rows[0];
+                    data[json.KEY_ACCOUNT] = params[json.KEY_ACCOUNT];
+                    console.log(data);
+                    loginData(params, data, appID, db, conn, json, callback);
                 } else {
                     sendErrMsg(db, conn, json, json.VALUE_ERROR_MESSAGE_OF_ACCOUNT_NO_EXISTENCE_DB, callback);
                 }
@@ -120,11 +117,25 @@ function checkPsd(input, store) {
 }
 
 function sendUserInfo(db, conn, json, data, bindDevData, callback) {
-    callback(resp.Resp.loginSucMsg(json, data, bindDevData));
+    var msg = resp.Resp.loginSucMsg(json, data, bindDevData);
+    callback(msg);
     db.tools.dbDisconnect(conn);
+    if (!msg[json.KEY_VF_STATES]) {
+        resendVFMail(data[json.KEY_ACCOUNT], data.VerifyID);
+    }
 }
 
 function sendErrMsg(db, conn, json, errMsgCode, callback) {
     callback(resp.Resp.errMsg(json, errMsgCode));
     db.tools.dbDisconnect(conn);
+}
+
+function resendVFMail(account, vfCode) {
+    var tools = require('../../config/tools');
+    var domain = tools.sendmail.domain();
+    var link = util.format('http://%s:9999/Account/Aquarium/VF?VFCode=%s', domain, vfCode);
+    console.log(link);
+    var sendParams = tools.sendmail.vfMsg(account, link);
+    console.log(sendParams);
+    tools.sendmail.sendEmail(account, sendParams.Sub, sendParams.SendMsg).then(info => {});
 }
